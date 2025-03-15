@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Services\Payment;
 
-use App\Application\DTOs\Payment\ApprovalPaymentPaypalDTO;
+use App\Application\DTOs\Payment\ApprovalPaymentDTO;
 use App\Shared\Application\DTOs\BaseDTO;
 use App\Application\DTOs\Payment\PaypalDTO;
 use App\Shared\Infrastructure\Concerns\ConsumeExternalService;
@@ -73,7 +73,7 @@ class PaypalService implements IPaymentService
 
     public function handleApproval(BaseDTO $approvalDTO)
     {
-        if (!($approvalDTO instanceof ApprovalPaymentPaypalDTO)) {
+        if (!($approvalDTO instanceof ApprovalPaymentDTO)) {
             throw new InvalidArgumentException('Expected ApprovalPaymentDTO');
         }
 

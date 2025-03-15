@@ -3,6 +3,8 @@
 namespace App\Application\CommandHandlers\Payment;
 
 use App\Application\Commands\Payment\PayOldOrderCommand;
+use App\Application\Exceptions\ExistAnotherOrderException;
+use App\Application\Exceptions\InvalidOrderException;
 use App\Domain\Enums\Order\OrderStatus;
 use App\Domain\Repositories\IOrderRepository;
 use App\Domain\Repositories\IPlanRepository;
@@ -12,11 +14,14 @@ use Illuminate\Support\Facades\Log;
 
 class PayOldOrderHandler
 {
+    private int $LOCK_TIME;
+
     public function __construct(
         private PaymentResolver $paymentResolver,
         private IPlanRepository $planRepository,
         private IOrderRepository $orderRepository
     ) {
+        $this->LOCK_TIME = config('app.payment.lock_time');
     }
 
     public function handle(PayOldOrderCommand $command)
@@ -24,7 +29,7 @@ class PayOldOrderHandler
         try {
             DB::beginTransaction();
 
-            $lock = cache()->lock(auth()->user()->id . ':payment:send', 10);
+            $lock = cache()->lock(auth()->user()->id . ':payment:send', $this->LOCK_TIME);
             if (!$lock->get()) {
                 return throw new \Exception(__('Hiện tại đăng có một yêu cầu thanh toán. Hãy cố gắng lại lần nữa sau ít phút.'));
             }
@@ -39,13 +44,27 @@ class PayOldOrderHandler
             return $paymentService->handlePayment($dto);
 
             DB::commit();
+        } catch(ExistAnotherOrderException $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __('Bạn đã có một đơn hàng đang được xử lý. Vui lòng chờ đợi.'));
+        } catch(InvalidOrderException $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __('Đơn hàng đã được xử lý hoặc đã bị hủy.'));
         } catch(\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
 
             return redirect()
                 ->back()
-                ->with('error', __("Không thể huỷ đơn hàng"));
+                ->with('error', __("Không thể xứ lý đơn hàng"));
         } finally {
             $lock->release();
         }
@@ -65,11 +84,11 @@ class PayOldOrderHandler
         $order = $this->orderRepository->getWithLock($orderId);
 
         if (!$this->isCanPay($order->id)) {
-            throw new \Exception(__('Bạn đã có một đơn hàng đang được xử lý. Vui lòng chờ đợi.'));
+            throw new ExistAnotherOrderException();
         }
 
         if ($order->status === OrderStatus::COMPLETED->value || $order->status === OrderStatus::CANCELED->value) {
-            throw new \Exception(__('Đơn hàng đã được xử lý hoặc đã bị hủy.'));
+            throw new InvalidOrderException();
         }
 
         return $order;

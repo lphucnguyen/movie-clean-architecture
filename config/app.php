@@ -16,6 +16,9 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
     'perPage' => env('PER_PAGE', 10),
     'allowTags' => ['<p><a><b><i><strong><em><ul><ol><li>'],
+    'payment' => [
+        'lock_time' => 10,
+    ],
 
     /*
     |--------------------------------------------------------------------------

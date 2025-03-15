@@ -3,9 +3,7 @@
 namespace App\Presentation\Http\Controllers\Payment;
 
 use App\Application\Commands\Payment\ApprovalCommand;
-use App\Application\DTOs\Payment\ApprovalPaymentStripeDTO;
-use App\Application\DTOs\Payment\ApprovalPaymentPaypalDTO;
-use App\Application\Enums\Payment\PaymentName;
+use App\Application\DTOs\Payment\ApprovalPaymentDTO;
 use App\Presentation\Http\Controllers\Controller;
 use App\Presentation\Http\Requests\Payment\ApprovalRequest;
 use Illuminate\Support\Facades\Bus;
@@ -23,11 +21,7 @@ class ApprovalController extends Controller
             'token' => $request->token,
         ];
 
-        if ($decrypted_data['payment_name'] === PaymentName::PAYPAL->value) {
-            $dto = new ApprovalPaymentPaypalDTO($decrypted_data);
-        } else if ($decrypted_data['payment_name'] === PaymentName::STRIPE->value) {
-            $dto = new ApprovalPaymentStripeDTO($decrypted_data);
-        }
+        $dto = new ApprovalPaymentDTO($decrypted_data);
 
         $approvalCommand = new ApprovalCommand($dto);
         return Bus::dispatch($approvalCommand);

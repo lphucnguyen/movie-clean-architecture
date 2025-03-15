@@ -3,6 +3,8 @@
 namespace App\Application\CommandHandlers\User;
 
 use App\Application\Commands\User\CancelOrderCommand;
+use App\Application\Exceptions\InvalidOrderException;
+use App\Application\Exceptions\ProcessingAnotherOrderException;
 use App\Domain\Enums\Order\OrderStatus;
 use App\Domain\Repositories\IOrderRepository;
 use Illuminate\Support\Facades\DB;
@@ -10,9 +12,12 @@ use Illuminate\Support\Facades\Log;
 
 class CancelOrderHandler
 {
+    private int $LOCK_TIME;
+
     public function __construct(
         private IOrderRepository $repository
     ) {
+        $this->LOCK_TIME = config('app.payment.lock_time');
     }
 
     public function handle(CancelOrderCommand $command)
@@ -22,14 +27,12 @@ class CancelOrderHandler
 
             $order = $this->repository->getWithLock($command->uuid);
             if ($order->status === OrderStatus::CANCELED->value || $order->status === OrderStatus::COMPLETED->value) {
-                return redirect()->back()->with('error', __('Đơn hàng đã hoàn thành hoặc huỷ'));
+                throw new InvalidOrderException();
             }
 
-            $lock = cache()->lock(auth()->user()->id . ':payment:send', 10);
+            $lock = cache()->lock(auth()->user()->id . ':payment:send', $this->LOCK_TIME);
             if (!$lock->get()) {
-                return redirect()
-                    ->back()
-                    ->with('error', __('Hiện tại đăng có một yêu cầu thanh toán. Hãy cố gắng lại lần nữa sau ít phút.'));
+                throw new ProcessingAnotherOrderException();
             }
 
             $this->repository->update($command->uuid, [
@@ -37,9 +40,25 @@ class CancelOrderHandler
             ]);
 
             DB::commit();
+
             return redirect()->back()->withSuccess(__('Đơn hàng huỷ thành công'));
+        } catch(ProcessingAnotherOrderException $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __('Hiện tại đang có một yêu cầu thanh toán. Hãy cố gắng lại lần nữa sau ít phút.'));
+        } catch(InvalidOrderException $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __('Đơn hàng đã được xử lý hoặc đã bị hủy.'));
         } catch(\Exception $e) {
             Log::error($e->getMessage());
+
             return redirect()
                 ->back()
                 ->with('error', __("Không thể huỷ đơn hàng"));

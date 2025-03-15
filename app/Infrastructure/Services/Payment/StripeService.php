@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Services\Payment;
 
-use App\Application\DTOs\Payment\ApprovalPaymentStripeDTO;
+use App\Application\DTOs\Payment\ApprovalPaymentDTO;
 use App\Shared\Application\DTOs\BaseDTO;
 use App\Application\DTOs\Payment\StripeDTO;
 use App\Shared\Infrastructure\Concerns\ConsumeExternalService;
@@ -52,7 +52,7 @@ class StripeService implements IPaymentService
 
     public function handleApproval(BaseDTO $approvalDTO)
     {
-        if (!($approvalDTO instanceof ApprovalPaymentStripeDTO)) {
+        if (!($approvalDTO instanceof ApprovalPaymentDTO)) {
             throw new InvalidArgumentException('Expected ApprovalPaymentDTO');
         }
 
