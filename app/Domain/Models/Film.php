@@ -2,20 +2,18 @@
 
 namespace App\Domain\Models;
 
-use App\Shared\Domain\Concerns\ExtendedModel;
-use App\Shared\Domain\Concerns\Favoritable;
-use App\Shared\Domain\Concerns\Rateable;
-use App\Shared\Domain\Concerns\Reviewable;
+use App\Shared\Domain\Concerns\HasFavorites;
+use App\Shared\Domain\Concerns\HasRates;
+use App\Shared\Domain\Concerns\HasReviews;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Film extends Model
 {
-    use Favoritable;
-    use Rateable;
-    use Reviewable;
-    use ExtendedModel;
+    use HasFavorites;
+    use HasRates;
+    use HasReviews;
     use HasUuids;
     use SoftDeletes;
 

@@ -2,13 +2,13 @@
 
 namespace App\Shared\Application\DTOs;
 
-use App\Shared\Application\Concerns\StaticConvertableArray;
-use App\Shared\Application\Concerns\StaticCreateable;
+use App\Shared\Application\Concerns\ConvertsToArray;
+use App\Shared\Application\Concerns\CreateableFromSource;
 
 class BaseDTO
 {
-    use StaticCreateable;
-    use StaticConvertableArray;
+    use CreateableFromSource;
+    use ConvertsToArray;
 
     public function __construct(array $data = [])
     {

@@ -4,7 +4,7 @@ namespace App\Shared\Domain\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 
-trait ModelUpdateable
+trait HasUpdatedAttributes
 {
     public function isUpdate(Model $model) {
         $fieldsUpdated = $model->getChanges();

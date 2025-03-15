@@ -7,11 +7,11 @@ use App\Domain\Events\Rating\RatingDeleted;
 use App\Domain\Events\Rating\RatingUpdated;
 
 use App\Domain\Models\Rating;
-use App\Shared\Domain\Concerns\ModelUpdateable;
+use App\Shared\Domain\Concerns\HasUpdatedAttributes;
 
 class RatingFilmObserver
 {
-    use ModelUpdateable;
+    use HasUpdatedAttributes;
 
     public function created(Rating $model)
     {

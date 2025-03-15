@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Concerns;
 
-trait Favoritable
+trait HasFavorites
 {
     public function isInFavorite($user)
     {

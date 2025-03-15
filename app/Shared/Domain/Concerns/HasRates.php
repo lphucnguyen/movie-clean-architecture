@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Concerns;
 
-trait Rateable
+trait HasRates
 {
     public function rate($user, $rating)
     {

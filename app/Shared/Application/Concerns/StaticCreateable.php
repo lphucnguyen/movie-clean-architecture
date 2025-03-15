@@ -5,7 +5,7 @@ namespace App\Shared\Application\Concerns;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
-trait StaticCreateable
+trait CreateableFromSource
 {
     public static function create(array $values)
     {

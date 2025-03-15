@@ -2,7 +2,6 @@
 
 namespace App\Domain\Models;
 
-use App\Shared\Domain\Concerns\ExtendedModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,7 +12,6 @@ class User extends Authenticatable
 {
     use HasApiTokens;
     use Notifiable;
-    use ExtendedModel;
     use HasUuids;
     use SoftDeletes;
 

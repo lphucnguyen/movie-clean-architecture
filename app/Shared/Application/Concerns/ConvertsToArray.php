@@ -2,7 +2,7 @@
 
 namespace App\Shared\Application\Concerns;
 
-trait StaticConvertableArray
+trait ConvertsToArray
 {
     public function toArray(): array
     {

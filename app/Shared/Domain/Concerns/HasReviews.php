@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Concerns;
 
-trait Reviewable
+trait HasReviews
 {
     public function review($user, $title, $review)
     {

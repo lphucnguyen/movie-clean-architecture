@@ -7,11 +7,11 @@ use App\Domain\Events\Category\CategoryDeleted;
 use App\Domain\Events\Category\CategoryUpdated;
 
 use App\Domain\Models\Category;
-use App\Shared\Domain\Concerns\ModelUpdateable;
+use App\Shared\Domain\Concerns\HasUpdatedAttributes;
 
 class CategoryObserver
 {
-    use ModelUpdateable;
+    use HasUpdatedAttributes;
 
     public function created(Category $model)
     {

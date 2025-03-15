@@ -7,12 +7,12 @@ use App\Domain\Events\User\UserDeleted;
 use App\Domain\Events\User\UserUpdated;
 
 use App\Domain\Models\User;
-use App\Shared\Domain\Concerns\ModelUpdateable;
+use App\Shared\Domain\Concerns\HasUpdatedAttributes;
 use Illuminate\Support\Facades\Storage;
 
 class UserObserver
 {
-    use ModelUpdateable;
+    use HasUpdatedAttributes;
 
     public function creating(User $model)
     {
@@ -42,8 +42,6 @@ class UserObserver
 
     public function deleting(User $model)
     {
-        $attributes = $model->getAttributes();
-
         if ($model->getRawOriginal('avatar') !== null) {
             Storage::delete($model->getRawOriginal('avatar'));
         }
