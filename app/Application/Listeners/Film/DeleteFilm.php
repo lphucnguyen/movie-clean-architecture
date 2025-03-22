@@ -2,7 +2,7 @@
 
 namespace App\Application\Listeners\Film;
 
-use App\Domain\Events\Category\CategoryDeleted;
+use App\Domain\Events\Film\FilmDeleted;
 use App\Domain\Repositories\IFilmRepositoryNeo;
 
 class DeleteFilm
@@ -19,8 +19,8 @@ class DeleteFilm
     /**
      * Handle the event.
      */
-    public function handle(CategoryDeleted $event): void
+    public function handle(FilmDeleted $event): void
     {
-        $this->filmRepository->delete($event->categoryId);
+        $this->filmRepository->delete($event->filmId);
     }
 }

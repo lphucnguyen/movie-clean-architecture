@@ -53,14 +53,14 @@ class PayNewOrderHandler
 
             return redirect()
                 ->back()
-                ->with('error', __('Bạn đã có một đơn hàng đang được xử lý. Vui lòng chờ đợi.'));
+                ->with('error', __($e->getMessage()));
         } catch(ProcessingAnotherOrderException $e) {
             DB::rollBack();
             Log::error($e->getMessage());
 
             return redirect()
                 ->back()
-                ->with('error', __('Hiện tại đang có một yêu cầu thanh toán. Hãy cố gắng lại lần nữa sau ít phút.'));
+                ->with('error', __($e->getMessage()));
         } catch(\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());

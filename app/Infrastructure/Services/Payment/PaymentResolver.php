@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Services\Payment;
 
+use App\Infrastructure\Exceptions\InvalidPaymentException;
+
 class PaymentResolver
 {
     public function resolveService($serviceName)
@@ -12,6 +14,6 @@ class PaymentResolver
             return resolve($service);
         }
 
-        throw new \Exception('The selected payment is not in the configuration');
+        throw new InvalidPaymentException();
     }
 }

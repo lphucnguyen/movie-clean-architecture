@@ -1,52 +1,50 @@
-# Use PHP 8.2 FPM Alpine as base image
-FROM php:8.2-fpm-alpine
+# Create base image
+FROM php:8.2-apache as base
 
-# Set working directory
-WORKDIR /var/www/html
+RUN apt-get update \
+    && apt-get install -y libicu-dev default-mysql-client \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install pdo pdo_mysql intl pcntl opcache
 
-# Install system dependencies
-RUN apk add --no-cache \
-    bash curl unzip tzdata nginx supervisor \
-    libpng-dev libzip-dev libxml2-dev icu-dev postgresql-dev oniguruma-dev \
-    g++ make autoconf
+RUN pecl install redis \
+    && docker-php-ext-enable redis
 
-# Install PHP extensions
-RUN docker-php-ext-install \
-    bcmath ctype fileinfo mbstring pdo_mysql pdo_pgsql xml zip
+# Install composer dependencies
+FROM composer as deps
+ARG APP_HOME=/var/www/html
+RUN rm -rf $APP_HOME && mkdir $APP_HOME
+WORKDIR $APP_HOME
+COPY . $APP_HOME
 
-# Install intl extension separately
-RUN docker-php-ext-configure intl && docker-php-ext-install intl
+RUN composer install --prefer-dist --no-scripts --no-progress --no-interaction --optimize-autoloader --no-dev $ARGS
+RUN composer dump-autoload --classmap-authoritative
 
-# Install Redis extension
-RUN pecl install redis && docker-php-ext-enable redis
+# Application Image
+FROM base
+ARG APP_HOME=/var/www/html
+ENV APP_HOME=$APP_HOME
+ENV APP_ENV=prod
+RUN rm -rf $APP_HOME && mkdir $APP_HOME
+WORKDIR $APP_HOME
 
-# Set timezone
-RUN cp /usr/share/zoneinfo/UTC /etc/localtime && echo "UTC" > /etc/timezone
+COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
+ADD ./docker/start.sh /
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Turn on mod_rewrite otherwise index.php will appear in the URL
+RUN a2enmod rewrite
 
-# Copy Laravel application
-COPY . /var/www/html
+# change uid and gid of apache to docker user uid/gid
+RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
+RUN chown -R www-data:www-data $APP_HOME
+USER www-data
 
-# Set correct permissions for Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Copy source files
+COPY --from=deps --chown=www-data:www-data $APP_HOME $APP_HOME
 
-# Install Laravel dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+EXPOSE 80
 
-# Optimize Laravel application
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan storage:link
+# Change to root otherwise apache won't start
+USER root
+RUN chmod +x /start.sh
 
-# Define the correct WEB DOCUMENT ROOT
-ENV WEB_DOCUMENT_ROOT=/var/www/html/public
-
-# Expose PHP-FPM port
-EXPOSE 9000
-
-# Start PHP-FPM
-CMD ["php-fpm"]
+CMD ["/start.sh"]

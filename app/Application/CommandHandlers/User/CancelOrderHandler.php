@@ -48,15 +48,16 @@ class CancelOrderHandler
 
             return redirect()
                 ->back()
-                ->with('error', __('Hiện tại đang có một yêu cầu thanh toán. Hãy cố gắng lại lần nữa sau ít phút.'));
+                ->with('error', __($e->getMessage()));
         } catch(InvalidOrderException $e) {
             DB::rollBack();
             Log::error($e->getMessage());
 
             return redirect()
                 ->back()
-                ->with('error', __('Đơn hàng đã được xử lý hoặc đã bị hủy.'));
+                ->with('error', __($e->getMessage()));
         } catch(\Exception $e) {
+            DB::rollBack();
             Log::error($e->getMessage());
 
             return redirect()

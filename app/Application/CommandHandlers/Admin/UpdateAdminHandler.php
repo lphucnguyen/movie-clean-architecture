@@ -5,7 +5,6 @@ namespace App\Application\CommandHandlers\Admin;
 use App\Application\Commands\Admin\UpdateAdminCommand;
 use App\Domain\Repositories\IAdminRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class UpdateAdminHandler
 {
