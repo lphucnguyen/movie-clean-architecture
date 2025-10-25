@@ -15,7 +15,7 @@ class SubscriptionRepository extends BaseRepository implements ISubscriptionRepo
         parent::__construct($model);
     }
 
-    public function getSubscriptionsByQueryParams(array $queryParams)
+    public function getSubscriptionsByQueryParams(array $queryParams, array $withRelations = [])
     {
         $query = $this->makeQuery();
 
@@ -26,16 +26,15 @@ class SubscriptionRepository extends BaseRepository implements ISubscriptionRepo
                 new \App\Infrastructure\QueryFilters\Subscription\FilterByUserName($queryParams),
             ])
             ->thenReturn()
-            ->with('user:id,username,last_name,first_name')
-            ->with('plan:id,slug')
+            ->with($withRelations)
             ->latest()
             ->paginate(config('app.perPage'));
     }
 
-    public function getSubscriptionByUserId(string $userId) {
+    public function getSubscriptionByUserId(string $userId, array $withRelations = []) {
         return $this->makeQuery()
             ->where('user_id', $userId)
-            ->with('plan:id,slug')
+            ->with($withRelations)
             ->first();
     }
 }

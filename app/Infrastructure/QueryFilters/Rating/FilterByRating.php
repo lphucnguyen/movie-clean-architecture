@@ -15,7 +15,7 @@ class FilterByRating
     {
         $queryParams = $this->queryParams;
 
-        $ratings =  $ratings->orWhere(function ($query) use ($queryParams) {
+        $ratings =  $ratings->where(function ($query) use ($queryParams) {
             $query->when($queryParams['searchRating'], function ($q) use ($queryParams) {
                 return $q->where('rating', (array)$queryParams['searchRating']);
             });

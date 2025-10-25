@@ -8,5 +8,5 @@ interface IOrderRepository extends IRepository
 {
     public function getUnpaidOrder($limit);
 
-    public function getOrdersByQueryParams(array $queryParams);
+    public function getOrdersByQueryParams(array $queryParams, array $relations = []);
 }

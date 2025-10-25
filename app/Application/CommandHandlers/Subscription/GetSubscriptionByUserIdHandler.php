@@ -14,6 +14,8 @@ class GetSubscriptionByUserIdHandler
 
     public function handle(GetSubscriptionByUserIdCommand $command)
     {
-        return $this->repository->getSubscriptionByUserId($command->userId);
+        return $this->repository->getSubscriptionByUserId($command->userId, [
+            'plan:id,slug'
+        ]);
     }
 }

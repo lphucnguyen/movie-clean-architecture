@@ -14,6 +14,7 @@ class GetOrdersHandler
 
     public function handle(GetOrdersCommand $command)
     {
-        return $this->repository->getOrdersByQueryParams($command->queryParam->toArray());
+        $withRelations = ['user:id,username,last_name,first_name'];
+        return $this->repository->getOrdersByQueryParams($command->queryParam->toArray(), $withRelations);
     }
 }

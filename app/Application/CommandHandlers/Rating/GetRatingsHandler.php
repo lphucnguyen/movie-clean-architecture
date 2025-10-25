@@ -16,6 +16,9 @@ class GetRatingsHandler
     {
         $queryParam = $command->queryParam;
 
-        return $this->repository->getRatingsByQueryParams($queryParam->toArray());
+        return $this->repository->getRatingsByQueryParams($queryParam->toArray(), [
+            'user',
+            'film',
+        ]);
     }
 }

@@ -6,5 +6,5 @@ use App\Shared\Domain\Repositories\IRepository;
 
 interface IRatingRepository extends IRepository
 {
-    public function getRatingsByQueryParams(array $queryParams);
+    public function getRatingsByQueryParams(array $queryParams, array $withRelations = []);
 }

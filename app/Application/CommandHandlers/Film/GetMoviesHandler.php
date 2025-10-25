@@ -17,7 +17,11 @@ class GetMoviesHandler
         $queryParam = $command->queryParam;
 
         return $this->repository->getFilmsByQueryParams(
-            $queryParam->toArray()
+            $queryParam->toArray(),
+            [
+                'categories',
+                'ratings',
+            ]
         );
     }
 }

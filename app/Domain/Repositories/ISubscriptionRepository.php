@@ -6,7 +6,7 @@ use App\Shared\Domain\Repositories\IRepository;
 
 interface ISubscriptionRepository extends IRepository
 {
-    public function getSubscriptionsByQueryParams(array $queryParams);
+    public function getSubscriptionsByQueryParams(array $queryParams, array $withRelations = []);
 
-    public function getSubscriptionByUserId(string $userId);
+    public function getSubscriptionByUserId(string $userId, array $withRelations = []);
 }

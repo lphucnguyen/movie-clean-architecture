@@ -15,7 +15,7 @@ class FilterByUser
     {
         $queryParams = $this->queryParams;
 
-        $ratings =  $ratings->orWhere(function ($query) use ($queryParams) {
+        $ratings =  $ratings->where(function ($query) use ($queryParams) {
             $query->when($queryParams['searchKey'], function ($q) use ($queryParams) {
                 return $q->whereHas('user', function ($q2) use ($queryParams) {
                     $q2->where('username', 'LIKE', "%" . $queryParams['searchKey'] . "%");

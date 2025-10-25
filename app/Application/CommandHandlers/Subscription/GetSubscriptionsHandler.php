@@ -15,7 +15,11 @@ class GetSubscriptionsHandler
     public function handle(GetSubscriptionsCommand $command)
     {
         return $this->repository->getSubscriptionsByQueryParams([
-            'searchKey' => $command->searchKey
+            'searchKey' => $command->searchKey,
+            [
+                'user:id,username,last_name,first_name',
+                'plan:id,slug'
+            ]
         ]);
     }
 }

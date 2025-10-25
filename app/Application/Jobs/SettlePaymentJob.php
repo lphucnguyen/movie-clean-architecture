@@ -2,6 +2,7 @@
 
 namespace App\Application\Jobs;
 
+use App\Domain\Enums\Order\OrderStatus;
 use App\Domain\Repositories\IOrderRepository;
 use App\Infrastructure\Services\Payment\PaymentResolver;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,6 +47,9 @@ class SettlePaymentJob implements ShouldQueue
                 DB::rollBack();
 
                 // Notification to Slack
+                $orderRepository->update($order->id, [
+                    'status' => OrderStatus::FAIL->value,
+                ]);
                 Log::error("Settlement failed for Order ID: {$order->id}. Error: " . $e->getMessage());
             }
         }

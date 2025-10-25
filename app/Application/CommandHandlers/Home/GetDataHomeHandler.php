@@ -23,7 +23,10 @@ class GetDataHomeHandler
     public function handle(GetDataHomeCommand $command)
     {
         $getMoviesDTO = new GetMoviesDTO();
-        $sliderFilms = $this->filmRepository->getFilmsByQueryParams($getMoviesDTO->toArray());
+        $sliderFilms = $this->filmRepository->getFilmsByQueryParams($getMoviesDTO->toArray(), [
+            'categories',
+            'ratings',
+        ])->getCollection();
         $categoryWithFilms = $this->categoryRepository->getLatestCategoriesWithFilms(
             config('app.perPage'),
             $this->MAX_MOVIE_PER_CATEGORY

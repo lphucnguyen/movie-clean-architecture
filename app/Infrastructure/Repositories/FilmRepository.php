@@ -37,7 +37,7 @@ class FilmRepository extends BaseRepository implements IFilmRepository
         return $this->get($uuid)->episodes()->latest()->get();
     }
 
-    public function getFilmsByQueryParams(array $queryParams)
+    public function getFilmsByQueryParams(array $queryParams, array $withRelations = [])
     {
         $query = $this->makeQuery();
 
@@ -50,8 +50,7 @@ class FilmRepository extends BaseRepository implements IFilmRepository
                 new \App\Infrastructure\QueryFilters\Film\FilterByFavorite($queryParams),
             ])
             ->thenReturn()
-            ->with('categories')
-            ->with('ratings')
+            ->with($withRelations)
             ->latest()
             ->paginate(config('app.perPage'));
     }

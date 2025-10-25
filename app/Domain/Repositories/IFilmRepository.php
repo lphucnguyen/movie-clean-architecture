@@ -12,5 +12,5 @@ interface IFilmRepository extends IRepository
 
     public function getEpisodes($uuidMovie);
 
-    public function getFilmsByQueryParams(array $queryParams);
+    public function getFilmsByQueryParams(array $queryParams, array $withRelations = []);
 }

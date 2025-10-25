@@ -21,7 +21,7 @@ class OrderRepository extends BaseRepository implements IOrderRepository
         return $this->model->whereNull('paid_at')->where('status', OrderStatus::COMPLETED->value)->limit($limit)->get();
     }
 
-    public function getOrdersByQueryParams(array $queryParams)
+    public function getOrdersByQueryParams(array $queryParams, array $relations = [])
     {
         $query = $this->makeQuery();
 
@@ -33,7 +33,7 @@ class OrderRepository extends BaseRepository implements IOrderRepository
                 new \App\Infrastructure\QueryFilters\Order\FilterByPlan($queryParams),
             ])
             ->thenReturn()
-            ->with('user:id,username,last_name,first_name')
+            ->with($relations)
             ->latest()
             ->paginate(config('app.perPage'));
     }

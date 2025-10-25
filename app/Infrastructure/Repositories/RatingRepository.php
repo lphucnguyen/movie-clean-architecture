@@ -16,7 +16,7 @@ class RatingRepository extends BaseRepository implements IRatingRepository
         parent::__construct($model);
     }
 
-    public function getRatingsByQueryParams(array $queryParams)
+    public function getRatingsByQueryParams(array $queryParams, array $withRelations = [])
     {
         $query = $this->makeQuery();
 
@@ -28,8 +28,7 @@ class RatingRepository extends BaseRepository implements IRatingRepository
                 new \App\Infrastructure\QueryFilters\Rating\FilterByRating($queryParams),
             ])
             ->thenReturn()
-            ->with('user')
-            ->with('film')
+            ->with($withRelations)
             ->latest()
             ->paginate(config('app.perPage'));
     }

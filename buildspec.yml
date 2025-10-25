@@ -4,13 +4,16 @@ phases:
   install:
     runtime-versions:
       php: 8.2
+    commands:
+      - echo "Installing dependencies..."
+      - composer install --no-dev --prefer-dist --no-progress --no-suggest
   pre_build: # commands to be run before build
     commands:
     - echo Logging in to Amazon ECR....
     - aws --version
     # login to Elastic container registry
     - eval $(aws ecr get-login --region ap-southeast-2 --no-include-email | sed 's|https://||')
-    - REPOSITORY_URI=442131788879.dkr.ecr.ap-southeast-2.amazonaws.com/laravel
+    - REPOSITORY_URI=442131788879.dkr.ecr.ap-southeast-2.amazonaws.com/laravel-ecr-repo
     - IMAGE_TAG=1.0
   build:
     commands:
